@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(breaker)
-find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
+find_library(SDL2_LIBRARY NAME SDL2 REQUIRED)
 
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 
@@ -15,4 +14,5 @@ add_executable(breaker
     ${SRC_DIR}/game.c
 )
 
-target_link_libraries(breaker ${SDL2_LIBRARIES})
+include_directories(breaker ${SDL2_INCLUDE_DIR})
+target_link_libraries(breaker ${SDL2_LIBRARY})
