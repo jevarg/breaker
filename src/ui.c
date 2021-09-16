@@ -21,7 +21,7 @@ t_ui *ui_init()
         return NULL;
     }
 
-    ui->renderer = SDL_CreateRenderer(ui->win, -1, 0);
+    ui->renderer = SDL_CreateRenderer(ui->win, -1, SDL_RENDERER_ACCELERATED);
     if (ui->renderer == NULL)
     {
         print_error("Failed to get renderer from the window");
