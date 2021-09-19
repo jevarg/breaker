@@ -12,6 +12,9 @@ add_executable(breaker
     ${SRC_DIR}/ui.c
     ${SRC_DIR}/input.c
     ${SRC_DIR}/game.c
+    ${SRC_DIR}/bar.c
+    # ${SRC_DIR}/ball.c
+    # ${SRC_DIR}/brick.c
 )
 
 include_directories(breaker ${SDL2_INCLUDE_DIR})

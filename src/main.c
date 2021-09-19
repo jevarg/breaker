@@ -10,7 +10,7 @@ int main()
 {
     t_ui *ui = ui_init();
 
-    start_game(ui);
+    game_start(ui);
     // while (ui->input->mouse_pos.x <= 700)
     // {
     //     SDL_PumpEvents();

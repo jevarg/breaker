@@ -37,6 +37,7 @@ t_ui *ui_init()
         return NULL;
     }
 
+    SDL_SetRenderDrawColor(ui->renderer, 0, 0, 0, 255);
     ui->input->mouse_pos.x = 0;
     ui->input->mouse_pos.y = 0;
 
