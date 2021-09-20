@@ -2,16 +2,24 @@
 #include "window.h"
 #include "utils.h"
 
-void game_loop(t_ui *ui, t_game *game)
+void game_update(t_game *game, t_ui *ui)
+{
+    input_update(ui->input);
+    bar_update(game->bar, ui->input);
+    ball_update(game->ball, ui->input);
+}
+
+void game_loop(t_game *game, t_ui *ui)
 {
     while (SDL_HasEvent(SDL_QUIT) == SDL_FALSE)
     {
-        SDL_PumpEvents();
-        input_update(ui->input);
-        bar_update(game->bar, ui->input);
         SDL_RenderClear(ui->renderer);
+        SDL_PumpEvents();
+
+        game_update(game, ui);
 
         bar_draw(game->bar, ui->renderer);
+        ball_draw(game->ball, ui->renderer);
 
         SDL_RenderPresent(ui->renderer);
         SDL_Delay(1000 / 60); // TODO: delta time
@@ -27,7 +35,7 @@ void game_start(t_ui *ui)
         return;
     }
 
-    game_loop(ui, game);
+    game_loop(game, ui);
     game_destroy(game);
 }
 
@@ -39,9 +47,6 @@ t_game *game_init(t_ui *ui)
         return NULL;
     }
 
-    game->bar = NULL;
-    game->ball = NULL;
-
     game->bar = bar_init(ui->renderer);
     if (game->bar == NULL)
     {
@@ -51,13 +56,17 @@ t_game *game_init(t_ui *ui)
         return NULL;
     }
 
-    // if (game->ball == NULL)
-    // {
-    //     print_error("Unable to init ball");
-    //     game_destroy(game);
+    game->ball = ball_init(ui->renderer);
+    if (game->ball == NULL)
+    {
+        print_error("Unable to init ball");
+        game_destroy(game);
 
-    //     return NULL;
-    // }
+        return NULL;
+    }
+
+    game->bar->y = WIN_HEIGHT - 100;
+    game->ball->pos.y = WIN_HEIGHT - 100 - BALL_RADIUS;
 
     return game;
 }

@@ -13,7 +13,7 @@ add_executable(breaker
     ${SRC_DIR}/input.c
     ${SRC_DIR}/game.c
     ${SRC_DIR}/bar.c
-    # ${SRC_DIR}/ball.c
+    ${SRC_DIR}/ball.c
     # ${SRC_DIR}/brick.c
 )
 

@@ -54,7 +54,7 @@ void bar_destroy(t_bar *bar)
 
 void bar_update(t_bar *bar, t_input *input)
 {
-    bar->x = input->mouse_pos.x;
+    bar->x = (input->mouse_pos.x - BAR_WIDTH / 2);
 }
 
 void bar_draw(t_bar *bar, SDL_Renderer *renderer)
