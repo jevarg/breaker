@@ -1,17 +1,34 @@
 #include "game.h"
 #include "window.h"
 #include "utils.h"
+#include "map.h"
 
 void game_update(t_game *game, t_ui *ui)
 {
     input_update(ui->input);
     bar_update(game->bar, ui->input);
     ball_update(game->ball, ui->input);
+
+    if (!is_point_inside_map(game->ball->pos.x, game->ball->pos.y))
+    {
+        game->ball->dir.x *= -1;
+        game->ball->dir.y *= -1;
+    }
+
+    SDL_Rect intersection;
+    if (SDL_IntersectRect(&game->ball->bounding_box, &game->bar->bounding_box, &intersection) == SDL_TRUE) {
+        game->ball->dir.y = -game->ball->dir.y;
+        game->ball->dir.x = ui->input->mouse_dir.x;
+
+        game->ball->velocity.x = (SDL_min(SDL_max(game->bar->force, 5), 10));
+        game->ball->velocity.y = (SDL_min(SDL_max(game->bar->force, 5), 20));
+    }
 }
 
 void game_loop(t_game *game, t_ui *ui)
 {
-    while (SDL_HasEvent(SDL_QUIT) == SDL_FALSE)
+    while (ui->input->needs_exit == SDL_FALSE &&
+           ui->input->kbd_state[SDL_SCANCODE_ESCAPE] == SDL_FALSE)
     {
         SDL_RenderClear(ui->renderer);
         SDL_PumpEvents();
@@ -65,7 +82,7 @@ t_game *game_init(t_ui *ui)
         return NULL;
     }
 
-    game->bar->y = WIN_HEIGHT - 100;
+    game->bar->pos.y = WIN_HEIGHT - 100;
     game->ball->pos.y = WIN_HEIGHT - 100 - BALL_RADIUS;
 
     return game;

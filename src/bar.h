@@ -2,14 +2,17 @@
 
 #include <SDL2/SDL.h>
 #include "input.h"
+#include "vec2.h"
 
 #define BAR_WIDTH 100
 #define BAR_HEIGHT 10
 
 typedef struct s_bar
 {
-    int x;
-    int y;
+    vec2 pos;
+    int force;
+
+    SDL_Rect bounding_box;
     SDL_Texture *texture;
 } t_bar;
 

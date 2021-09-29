@@ -5,11 +5,15 @@
 #include "vec2.h"
 
 #define BALL_RADIUS 10
+#define BALL_DEFAULT_SPEED 5
 
 typedef struct s_ball
 {
     vec2 pos;
     vec2 dir;
+    vec2 velocity;
+
+    SDL_Rect bounding_box;
     SDL_Texture *texture;
 } t_ball;
 
