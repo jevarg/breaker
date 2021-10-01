@@ -9,14 +9,20 @@ void game_update(t_game *game, t_ui *ui)
     bar_update(game->bar, ui->input);
     ball_update(game->ball, ui->input);
 
-    if (!is_point_inside_map(game->ball->pos.x, game->ball->pos.y))
+    if (game->ball->pos.x > WIN_WIDTH ||
+        game->ball->pos.x < 0)
     {
-        game->ball->dir.x *= -1;
-        game->ball->dir.y *= -1;
+        game->ball->dir.x = -game->ball->dir.x;
     }
 
-    SDL_Rect intersection;
-    if (SDL_IntersectRect(&game->ball->bounding_box, &game->bar->bounding_box, &intersection) == SDL_TRUE) {
+    if (game->ball->pos.y > WIN_HEIGHT ||
+        game->ball->pos.y < 0)
+    {
+        game->ball->dir.y = -game->ball->dir.y;
+    }
+
+    SDL_Rect inter;
+    if (SDL_IntersectRect(&game->ball->bounding_box, &game->bar->bounding_box, &inter) == SDL_TRUE) {
         game->ball->dir.y = -game->ball->dir.y;
         game->ball->dir.x = ui->input->mouse_dir.x;
 
