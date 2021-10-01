@@ -2,33 +2,13 @@
 #include "window.h"
 #include "utils.h"
 #include "map.h"
+#include "collisions.h"
 
 void game_update(t_game *game, t_ui *ui)
 {
     input_update(ui->input);
     bar_update(game->bar, ui->input);
     ball_update(game->ball, ui->input);
-
-    if (game->ball->pos.x > WIN_WIDTH ||
-        game->ball->pos.x < 0)
-    {
-        game->ball->dir.x = -game->ball->dir.x;
-    }
-
-    if (game->ball->pos.y > WIN_HEIGHT ||
-        game->ball->pos.y < 0)
-    {
-        game->ball->dir.y = -game->ball->dir.y;
-    }
-
-    SDL_Rect inter;
-    if (SDL_IntersectRect(&game->ball->bounding_box, &game->bar->bounding_box, &inter) == SDL_TRUE) {
-        game->ball->dir.y = -game->ball->dir.y;
-        game->ball->dir.x = ui->input->mouse_dir.x;
-
-        game->ball->velocity.x = (SDL_min(SDL_max(game->bar->force, 5), 10));
-        game->ball->velocity.y = (SDL_min(SDL_max(game->bar->force, 5), 20));
-    }
 }
 
 void game_loop(t_game *game, t_ui *ui)
@@ -40,6 +20,7 @@ void game_loop(t_game *game, t_ui *ui)
         SDL_PumpEvents();
 
         game_update(game, ui);
+        handle_collisions(game, ui);
 
         bar_draw(game->bar, ui->renderer);
         ball_draw(game->ball, ui->renderer);
