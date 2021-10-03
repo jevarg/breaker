@@ -13,7 +13,7 @@ t_brick *brick_init(SDL_Renderer *renderer)
 
     brick->texture = NULL;
     brick->pos = (vec2){0};
-    brick->state = NORMAL;
+    brick->state = DEFAULT;
     brick->bounding_box = (SDL_Rect){
         .x = 0,
         .y = 0,
@@ -79,7 +79,7 @@ void brick_update(t_brick *brick, t_input *input)
 
 void brick_draw(t_brick *brick, SDL_Renderer *renderer)
 {
-    if (brick->state != NORMAL)
+    if (brick->state != DEFAULT)
     {
         return;
     }

@@ -9,7 +9,7 @@
 
 typedef enum e_brick_state
 {
-    NORMAL,
+    DEFAULT,
     BROKEN
 } t_brick_state;
 
