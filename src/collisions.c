@@ -28,8 +28,25 @@ void ball_bar_collisions(t_game *game, t_ui *ui)
     }
 }
 
+void ball_bricks_collisions(t_game *game, t_ui *ui)
+{
+    for (u_int i = 0; i < game->brick_nb; ++i)
+    {
+        SDL_Rect inter;
+        if (SDL_IntersectRect(&game->ball->bounding_box, &game->bricks[i]->bounding_box, &inter) == SDL_TRUE) {
+            game->ball->dir.y = -game->ball->dir.y;
+            game->ball->dir.x = ui->input->mouse_dir.x;
+
+            brick_break(game->bricks[i]);
+
+            return;
+        }
+    }
+}
+
 void handle_collisions(t_game *game, t_ui *ui)
 {
     ball_world_collisions(game, ui);
     ball_bar_collisions(game, ui);
+    ball_bricks_collisions(game, ui);
 }
