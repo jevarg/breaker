@@ -4,9 +4,11 @@
 #include "bar.h"
 #include "brick.h"
 #include "ui.h"
+#include "resource_manager.h"
 
 typedef struct s_game
 {
+    t_resource_manager resource_mgr;
     t_bar *bar;
     t_ball *ball;
     t_brick **bricks;

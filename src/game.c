@@ -112,6 +112,12 @@ t_game *game_init(t_ui *ui)
     game->bar->pos.y = WIN_HEIGHT - 100;
     game->ball->pos.y = WIN_HEIGHT - 100 - BALL_RADIUS;
 
+    game->resource_mgr.last_id = -1;
+    for (size_t i = 0; i < MAX_RESOURCES; ++i)
+    {
+        game->resource_mgr.textures[i] = NULL;
+    }
+
     return game;
 }
 
