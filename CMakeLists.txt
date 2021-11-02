@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(breaker)
-find_library(SDL2_LIBRARY NAME SDL2 REQUIRED)
-find_library(SDL2_IMAGE NAME SDL2_image REQUIRED)
+
+find_library(SDL2 SDL2 REQUIRED)
+find_library(SDL2_IMAGE SDL2_image REQUIRED)
 
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 
@@ -20,5 +21,7 @@ add_executable(breaker
     ${SRC_DIR}/brick.c
 )
 
-include_directories(breaker ${SDL2_INCLUDE_DIR} ${SDL2IMAGE_INCLUDE_DIRS})
-target_link_libraries(breaker ${SDL2_LIBRARY} ${SDL2IMAGE_LIBRARY})
+target_link_libraries(breaker
+    ${SDL2}
+    ${SDL2_IMAGE}
+)
