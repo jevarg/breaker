@@ -1,23 +1,26 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+
 #include "input.h"
 #include "vec2.h"
+#include "resource_manager.h"
 
-#define BALL_RADIUS 10
-#define BALL_DEFAULT_SPEED 5
+#define BALL_RADIUS 16.0f
+#define BALL_DEFAULT_SPEED 300
+#define BALL_MAX_SPEED 3000
 
 typedef struct s_ball
 {
-    vec2 pos;
+    fvec2 pos;
     vec2 dir;
-    vec2 velocity;
+    fvec2 velocity;
 
-    SDL_Rect bounding_box;
+    SDL_FRect bounding_box;
     SDL_Texture *texture;
 } t_ball;
 
 t_ball *ball_init(SDL_Renderer *renderer);
 void ball_destroy(t_ball *ball);
-void ball_update(t_ball *ball, t_input *input);
-void ball_draw(t_ball *ball, SDL_Renderer *renderer);
+void ball_update(t_ball *ball, t_input *input, float delta);
+void ball_draw(t_ball *ball, t_resource_manager *mgr, SDL_Renderer *renderer);

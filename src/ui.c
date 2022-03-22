@@ -37,7 +37,7 @@ t_ui *ui_init()
         return NULL;
     }
 
-    SDL_SetRenderDrawColor(ui->renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(ui->renderer, 155, 188, 15, 255);
     ui->input->needs_exit = SDL_FALSE;
     ui->input->kbd_state = SDL_GetKeyboardState(NULL);
     ui->input->mouse_pos.x = 0;

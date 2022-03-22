@@ -18,33 +18,45 @@ void ball_world_collisions(t_game *game, t_ui *ui)
 
 void ball_bar_collisions(t_game *game, t_ui *ui)
 {
-    SDL_Rect inter;
-    if (SDL_IntersectRect(&game->ball->bounding_box, &game->bar->bounding_box, &inter) == SDL_TRUE) {
+    SDL_Rect A = {
+        .x = (int) game->ball->bounding_box.x,
+        .y = (int) game->ball->bounding_box.y,
+        .w = (int) game->ball->bounding_box.w,
+        .h = (int) game->ball->bounding_box.h
+    };
+
+    if (SDL_HasIntersection(&A, &game->bar->bounding_box) == SDL_TRUE) {
         game->ball->dir.y = -game->ball->dir.y;
         game->ball->dir.x = ui->input->mouse_dir.x;
 
-        game->ball->velocity.x = (SDL_min(SDL_max(game->bar->force, 5), 10));
-        game->ball->velocity.y = (SDL_min(SDL_max(game->bar->force, 5), 20));
+        game->ball->velocity.x = (SDL_min(SDL_max(game->bar->force * 50, BALL_DEFAULT_SPEED), BALL_MAX_SPEED));
+        game->ball->velocity.y = (SDL_min(SDL_max(game->bar->force * 50, BALL_DEFAULT_SPEED), BALL_MAX_SPEED * 2));
     }
 }
 
 void ball_bricks_collisions(t_game *game, t_ui *ui)
 {
+    SDL_Rect A = {
+        .x = (int) game->ball->bounding_box.x,
+        .y = (int) game->ball->bounding_box.y,
+        .w = (int) game->ball->bounding_box.w,
+        .h = (int) game->ball->bounding_box.h
+    };
+
     for (u_int i = 0; i < game->brick_nb; ++i)
     {
-        SDL_Rect inter;
-        if (SDL_IntersectRect(&game->ball->bounding_box, &game->bricks[i]->bounding_box, &inter) == SDL_TRUE) {
+        if (SDL_HasIntersection(&A, &game->bricks[i]->bounding_box) == SDL_TRUE) {
             game->ball->dir.y = -game->ball->dir.y;
             game->ball->dir.x = ui->input->mouse_dir.x;
 
-            brick_break(game->bricks[i]);
+            brick_take_damage(game->bricks[i]);
 
             return;
         }
     }
 }
 
-void handle_collisions(t_game *game, t_ui *ui)
+void handle_collisions(t_game *game, t_ui *ui, float delta)
 {
     ball_world_collisions(game, ui);
     ball_bar_collisions(game, ui);

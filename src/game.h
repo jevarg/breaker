@@ -6,6 +6,8 @@
 #include "ui.h"
 #include "resource_manager.h"
 
+#define TARGET_FPS 60
+
 typedef struct s_game
 {
     t_resource_manager resource_mgr;

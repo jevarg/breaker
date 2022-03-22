@@ -19,6 +19,7 @@ add_executable(breaker
     ${SRC_DIR}/map.c
     ${SRC_DIR}/collisions.c
     ${SRC_DIR}/brick.c
+    ${SRC_DIR}/resource_manager.c
 )
 
 target_link_libraries(breaker

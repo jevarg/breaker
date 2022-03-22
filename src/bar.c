@@ -21,25 +21,6 @@ t_bar *bar_init(SDL_Renderer *renderer)
         .h = BAR_HEIGHT
     };
 
-    SDL_Surface *s = SDL_CreateRGBSurface(0, bar->bounding_box.w, bar->bounding_box.h, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
-    if (s == NULL)
-    {
-        print_error("Unable to create bar surface!");
-        bar_destroy(bar);
-
-        return NULL;
-    }
-
-    SDL_FillRect(s, NULL, 0xff0000ff);
-    bar->texture = SDL_CreateTextureFromSurface(renderer, s);
-    if (bar->texture == NULL)
-    {
-        print_error("Unable to create bar texture");
-        bar_destroy(bar);
-
-        return NULL;
-    }
-
     return bar;
 }
 
@@ -68,14 +49,40 @@ void bar_update(t_bar *bar, t_input *input)
     bar->force = SDL_max(1, abs(input->mouse_delta.x));
 }
 
-void bar_draw(t_bar *bar, SDL_Renderer *renderer)
+void bar_draw(t_bar *bar, t_resource_manager *mgr, SDL_Renderer *renderer)
 {
-    SDL_Rect rect = {
+    SDL_Rect dstrect = {
         .h = BAR_HEIGHT,
         .w = BAR_WIDTH,
         .x = bar->pos.x,
         .y = bar->pos.y
     };
 
-    SDL_RenderCopy(renderer, bar->texture, NULL, &rect);
+    SDL_Rect src_rect = TILESET_RECT(TEX_BAR_LEFT);
+
+    if (BAR_WIDTH > TILE_WIDTH)
+    {
+        dstrect.w = TILE_WIDTH;
+        uint8_t nb_tiles = (BAR_WIDTH / TILE_WIDTH);
+
+        for (uint8_t i = 0; i < nb_tiles; ++i)
+        {
+            if (!i)
+            {
+                src_rect.x = (TILE_WIDTH * TEX_BAR_LEFT);
+            }
+            else if (i + 1 == nb_tiles)
+            {
+                src_rect.x = (TILE_WIDTH * TEX_BAR_RIGHT);
+            }
+            else
+            {
+                src_rect.x = (TILE_WIDTH * TEX_BAR_BODY);
+            }
+
+            dstrect.x = bar->pos.x + (dstrect.w * i);
+
+            SDL_RenderCopy(renderer, mgr->tileset, &src_rect, &dstrect);
+        }
+    }
 }

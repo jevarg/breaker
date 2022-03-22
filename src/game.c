@@ -5,11 +5,11 @@
 #include "collisions.h"
 #include "brick.h"
 
-void game_update(t_game *game, t_ui *ui)
+void game_update(t_game *game, t_ui *ui, float delta)
 {
     input_update(ui->input);
     bar_update(game->bar, ui->input);
-    ball_update(game->ball, ui->input);
+    ball_update(game->ball, ui->input, delta);
 
     for (u_int i = 0; i < game->brick_nb; ++i)
     {
@@ -17,27 +17,58 @@ void game_update(t_game *game, t_ui *ui)
     }
 }
 
+Uint32 fps_counter(Uint32 interval, void *param)
+{
+    int *fps = param;
+
+    printf("FPS %d\n", *fps);
+    *fps = 0;
+
+    return interval; // We want a steady interval
+}
+
 void game_loop(t_game *game, t_ui *ui)
 {
+    float delta = 0;
+    int fps = 0;
+    Uint64 frame_start_time = 0;
+    Uint64 frame_end_time = 0;
+
+    SDL_AddTimer(1000, fps_counter, &fps);
+
     while (ui->input->needs_exit == SDL_FALSE &&
            ui->input->kbd_state[SDL_SCANCODE_ESCAPE] == SDL_FALSE)
     {
+        frame_start_time = SDL_GetTicks64();
+        delta = (frame_start_time - frame_end_time) / 1000.0f;
+
         SDL_RenderClear(ui->renderer);
         SDL_PumpEvents();
 
-        game_update(game, ui);
-        handle_collisions(game, ui);
+        game_update(game, ui, delta);
+        handle_collisions(game, ui, delta);
 
-        bar_draw(game->bar, ui->renderer);
-        ball_draw(game->ball, ui->renderer);
+        bar_draw(game->bar, &game->resource_mgr, ui->renderer);
+        ball_draw(game->ball, &game->resource_mgr, ui->renderer);
 
         for (u_int i = 0; i < game->brick_nb; ++i)
         {
-            brick_draw(game->bricks[i], ui->renderer);
+            brick_draw(game->bricks[i], &game->resource_mgr, ui->renderer);
         }
 
         SDL_RenderPresent(ui->renderer);
-        SDL_Delay(1000 / 60); // TODO: delta time
+
+        frame_end_time = SDL_GetTicks64();
+        int elapsed_time = (frame_end_time - frame_start_time);
+        int target_delay = (1000 / TARGET_FPS);
+        int delay = target_delay - elapsed_time;
+
+        if (delay > 0)
+        {
+            SDL_Delay(delay);
+        }
+
+        ++fps;
     }
 }
 
@@ -91,6 +122,14 @@ t_game *game_init(t_ui *ui)
         return NULL;
     }
 
+    // for (size_t i = 0; i < MAX_RESOURCES; ++i)
+    // {
+    //     game->resource_mgr.resources[i] = NULL;
+    // }
+
+    // load_texture(&game->resource_mgr, ui->renderer, TEX_CORPO, "../test.jpg");
+    load_tileset(&game->resource_mgr, ui->renderer);
+
     game->bar = bar_init(ui->renderer);
     if (game->bar == NULL)
     {
@@ -111,12 +150,6 @@ t_game *game_init(t_ui *ui)
 
     game->bar->pos.y = WIN_HEIGHT - 100;
     game->ball->pos.y = WIN_HEIGHT - 100 - BALL_RADIUS;
-
-    game->resource_mgr.last_id = -1;
-    for (size_t i = 0; i < MAX_RESOURCES; ++i)
-    {
-        game->resource_mgr.textures[i] = NULL;
-    }
 
     return game;
 }

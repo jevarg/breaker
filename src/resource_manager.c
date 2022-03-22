@@ -1,7 +1,12 @@
-#include "resource_manager.h"
-#include <SDL2_image/SDL_image.h>
+#include <SDL2/SDL_image.h>
 
-bool load_texture(t_resource_manager *mgr, const char *path)
+#include "resource_manager.h"
+#include "utils.h"
+
+void load_tileset(t_resource_manager *mgr, SDL_Renderer *renderer)
 {
-    IMG_Load();
+    SDL_Surface *loaded_surface = IMG_Load(RES_TILESET_PATH);
+    SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, loaded_surface);
+
+    mgr->tileset = tex;
 }

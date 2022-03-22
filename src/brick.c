@@ -77,25 +77,48 @@ void brick_update(t_brick *brick, t_input *input)
     brick->bounding_box.y = brick->pos.y;
 }
 
-void brick_draw(t_brick *brick, SDL_Renderer *renderer)
+void brick_draw(t_brick *brick, t_resource_manager *mgr, SDL_Renderer *renderer)
 {
-    if (brick->state != DEFAULT)
+    if (brick->state == BROKEN)
     {
+        // We do not render broken bricks.
         return;
     }
 
-    SDL_Rect rect = {
+    SDL_Rect dstrect = {
         .w = BRICK_WIDTH,
         .h = BRICK_HEIGHT,
         .x = brick->pos.x,
-        .y = brick->pos.y};
+        .y = brick->pos.y
+    };
 
-    SDL_RenderCopy(renderer, brick->texture, NULL, &rect);
+    t_resource_id type = (brick->state == DAMAGED) ? TEX_CRACKS : TEX_BRICK;
+    SDL_Rect srcrect = TILESET_RECT(type);
+
+    uint8_t nb_tiles = BRICK_WIDTH / TILE_WIDTH;
+    
+    if (nb_tiles > 1)
+    {
+        dstrect.w = TILE_WIDTH;
+    }
+
+    for (uint i = 0; i < nb_tiles; ++i)
+    {
+        dstrect.x = brick->pos.x + dstrect.w * i;
+        SDL_RenderCopy(renderer, mgr->tileset, &srcrect, &dstrect);
+    }
 }
 
-void brick_break(t_brick *brick)
+void brick_take_damage(t_brick *brick)
 {
-    brick->bounding_box.w = 0;
-    brick->bounding_box.h = 0;
-    brick->state = BROKEN;
+    if (brick->state == DEFAULT)
+    {
+        brick->state = DAMAGED;
+    }
+    else if (brick->state == DAMAGED)
+    {
+        brick->state = BROKEN;
+        brick->bounding_box.w = 0;
+        brick->bounding_box.h = 0;
+    }
 }
