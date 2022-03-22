@@ -18,6 +18,7 @@ void ball_world_collisions(t_game *game, t_ui *ui)
 
 void ball_bar_collisions(t_game *game, t_ui *ui)
 {
+    // TODO: Fix this mess
     SDL_Rect A = {
         .x = (int) game->ball->bounding_box.x,
         .y = (int) game->ball->bounding_box.y,
@@ -36,6 +37,7 @@ void ball_bar_collisions(t_game *game, t_ui *ui)
 
 void ball_bricks_collisions(t_game *game, t_ui *ui)
 {
+    // TODO: Fix this mess
     SDL_Rect A = {
         .x = (int) game->ball->bounding_box.x,
         .y = (int) game->ball->bounding_box.y,
