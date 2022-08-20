@@ -14,6 +14,7 @@ brick_t *brick_init(SDL_Renderer *renderer)
     brick->texture = NULL;
     brick->pos = (vec2){0};
     brick->state = BRICK_STATE_DEFAULT;
+    brick->res = TEX_BRICK;
     brick->bounding_box = (SDL_FRect){
         .x = 0,
         .y = 0,
@@ -92,10 +93,9 @@ void brick_draw(brick_t *brick, resource_manager_t *mgr, SDL_Renderer *renderer)
         .y = brick->pos.y
     };
 
-    resource_id_t type = (brick->state == BRICK_STATE_DAMAGED) ? TEX_CRACKS : TEX_BRICK;
-    SDL_Rect srcrect = TILESET_RECT(type);
+    SDL_Rect srcrect = TILESET_RECT(brick->res);
 
-    uint8_t nb_tiles = BRICK_WIDTH / TILE_WIDTH;
+    uint8_t nb_tiles = 1;//BRICK_WIDTH / TILE_WIDTH;
     
     if (nb_tiles > 1)
     {
@@ -106,6 +106,7 @@ void brick_draw(brick_t *brick, resource_manager_t *mgr, SDL_Renderer *renderer)
     {
         dstrect.x = brick->pos.x + dstrect.w * i;
         SDL_RenderCopy(renderer, mgr->tileset, &srcrect, &dstrect);
+        // SDL_RenderCopy(renderer, brick->texture, NULL, &dstrect);
     }
 }
 
@@ -114,6 +115,7 @@ void brick_take_damage(brick_t *brick)
     if (brick->state == BRICK_STATE_DEFAULT)
     {
         brick->state = BRICK_STATE_DAMAGED;
+        brick->res = TEX_BRICK_CRACKED_1 + (rand() % 3);
     }
     else if (brick->state == BRICK_STATE_DAMAGED)
     {

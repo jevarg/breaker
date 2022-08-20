@@ -42,7 +42,7 @@ void game_draw(game_t *game, ui_t *ui)
     {
     case GAME_STATE_GAME_OVER:
         draw_text("GAME OVER", ui, 0, 0, CENTERED_X | CENTERED_Y);
-        draw_text("press any key to try again", ui, 0, WIN_HEIGHT - 50, CENTERED_X);
+        draw_text("press enter to try again", ui, 0, WIN_HEIGHT - 50, CENTERED_X);
         break;
     
     default:

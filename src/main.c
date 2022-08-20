@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "ui.h"
 #include "input.h"
@@ -10,6 +11,8 @@
 
 int main()
 {
+    srand((unsigned) time(NULL));
+
     ui_t *ui = ui_init();
     if (ui == NULL)
     {

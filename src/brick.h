@@ -6,8 +6,8 @@
 #include "input.h"
 #include "resource_manager.h"
 
-#define BRICK_WIDTH 96
-#define BRICK_HEIGHT 16
+#define BRICK_WIDTH (16 * 3)
+#define BRICK_HEIGHT (16 * 3)
 
 typedef enum e_brick_state
 {
@@ -22,6 +22,7 @@ typedef struct s_brick
     SDL_FRect bounding_box;
     SDL_Texture *texture;
     t_brick_state state;
+    resource_id_t res;
 } brick_t;
 
 brick_t *brick_init(SDL_Renderer *renderer);

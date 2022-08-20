@@ -18,7 +18,9 @@ typedef enum resource_type_e
 typedef enum resource_id_t
 {
     TEX_BRICK = 0,
-    TEX_CRACKS,
+    TEX_BRICK_CRACKED_1,
+    TEX_BRICK_CRACKED_2,
+    TEX_BRICK_CRACKED_3,
     TEX_BAR_LEFT,
     TEX_BAR_BODY,
     TEX_BAR_RIGHT,
