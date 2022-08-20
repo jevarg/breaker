@@ -11,21 +11,21 @@
 
 typedef enum e_brick_state
 {
-    DEFAULT,
-    DAMAGED,
-    BROKEN
+    BRICK_STATE_DEFAULT,
+    BRICK_STATE_DAMAGED,
+    BRICK_STATE_BROKEN
 } t_brick_state;
 
 typedef struct s_brick
 {
     vec2 pos;
-    SDL_Rect bounding_box;
+    SDL_FRect bounding_box;
     SDL_Texture *texture;
     t_brick_state state;
-} t_brick;
+} brick_t;
 
-t_brick *brick_init(SDL_Renderer *renderer);
-void brick_destroy(t_brick *brick);
-void brick_update(t_brick *brick, t_input *input);
-void brick_draw(t_brick *brick, t_resource_manager *mgr, SDL_Renderer *renderer);
-void brick_take_damage(t_brick *brick);
+brick_t *brick_init(SDL_Renderer *renderer);
+void brick_destroy(brick_t *brick);
+void brick_update(brick_t *brick, input_t *input);
+void brick_draw(brick_t *brick, resource_manager_t *mgr, SDL_Renderer *renderer);
+void brick_take_damage(brick_t *brick);

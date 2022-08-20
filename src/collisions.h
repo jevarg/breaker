@@ -2,4 +2,4 @@
 
 #include "game.h"
 
-void handle_collisions(t_game *game, t_ui *ui, float delta);
+void handle_collisions(game_t *game, ui_t *ui, float delta);

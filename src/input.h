@@ -16,6 +16,6 @@ typedef struct s_input
     SDL_Point mouse_pos;
     SDL_Point mouse_delta;
     SDL_Point mouse_dir;
-} t_input;
+} input_t;
 
-void input_update(t_input *input);
+void input_update(input_t *input);

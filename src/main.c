@@ -6,19 +6,19 @@
 #include "ui.h"
 #include "input.h"
 #include "game.h"
+#include "utils.h"
 
 int main()
 {
-    t_ui *ui = ui_init();
+    ui_t *ui = ui_init();
+    if (ui == NULL)
+    {
+        print_error("Fatal error: Could not create ui!");
+        print_error("Exiting...");
 
-    SDL_Surface *imgSurface = IMG_Load("../test.jpg");
-    SDL_Texture *tex = NULL;
-
-    tex = SDL_CreateTextureFromSurface(ui->renderer, imgSurface);
-
-    SDL_FreeSurface(imgSurface);
+        return 1;
+    }
 
     game_start(ui);
-
     ui_destroy(ui);
 }

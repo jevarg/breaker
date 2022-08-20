@@ -2,9 +2,9 @@
 #include "bar.h"
 #include "utils.h"
 
-t_bar *bar_init(SDL_Renderer *renderer)
+bar_t *bar_init(SDL_Renderer *renderer)
 {
-    t_bar *bar = malloc(sizeof(t_bar));
+    bar_t *bar = malloc(sizeof(bar_t));
     if (bar == NULL)
     {
         print_error("Unable to initialize bar");
@@ -14,7 +14,7 @@ t_bar *bar_init(SDL_Renderer *renderer)
     bar->texture = NULL;
     bar->force = 0;
     bar->pos = (vec2) {0};
-    bar->bounding_box = (SDL_Rect) {
+    bar->bounding_box = (SDL_FRect) {
         .x = 0,
         .y = 0,
         .w = BAR_WIDTH,
@@ -24,7 +24,7 @@ t_bar *bar_init(SDL_Renderer *renderer)
     return bar;
 }
 
-void bar_destroy(t_bar *bar)
+void bar_destroy(bar_t *bar)
 {
     if (bar == NULL)
     {
@@ -39,17 +39,17 @@ void bar_destroy(t_bar *bar)
     free(bar);
 }
 
-void bar_update(t_bar *bar, t_input *input)
+void bar_update(bar_t *bar, input_t *input)
 {
     bar->pos.x = (input->mouse_pos.x - BAR_WIDTH / 2);
 
     bar->bounding_box.x = bar->pos.x;
     bar->bounding_box.y = bar->pos.y;
 
-    bar->force = SDL_max(1, abs(input->mouse_delta.x));
+    bar->force = SDL_max(1, abs(input->mouse_delta.x) / 2);
 }
 
-void bar_draw(t_bar *bar, t_resource_manager *mgr, SDL_Renderer *renderer)
+void bar_draw(bar_t *bar, resource_manager_t *mgr, SDL_Renderer *renderer)
 {
     SDL_Rect dstrect = {
         .h = BAR_HEIGHT,

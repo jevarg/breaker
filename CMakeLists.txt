@@ -4,6 +4,7 @@ project(breaker)
 
 find_library(SDL2 SDL2 REQUIRED)
 find_library(SDL2_IMAGE SDL2_image REQUIRED)
+find_library(SDL2_TTF SDL2_ttf REQUIRED)
 
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 
@@ -20,9 +21,11 @@ add_executable(breaker
     ${SRC_DIR}/collisions.c
     ${SRC_DIR}/brick.c
     ${SRC_DIR}/resource_manager.c
+    ${SRC_DIR}/text.c
 )
 
 target_link_libraries(breaker
     ${SDL2}
     ${SDL2_IMAGE}
+    ${SDL2_TTF}
 )

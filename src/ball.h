@@ -7,20 +7,19 @@
 #include "resource_manager.h"
 
 #define BALL_RADIUS 16.0f
-#define BALL_DEFAULT_SPEED 300
-#define BALL_MAX_SPEED 3000
+#define BALL_DEFAULT_SPEED 10
+#define BALL_MAX_SPEED 10
 
-typedef struct s_ball
+typedef struct ball_t
 {
     fvec2 pos;
-    vec2 dir;
     fvec2 velocity;
 
     SDL_FRect bounding_box;
     SDL_Texture *texture;
-} t_ball;
+} ball_t;
 
-t_ball *ball_init(SDL_Renderer *renderer);
-void ball_destroy(t_ball *ball);
-void ball_update(t_ball *ball, t_input *input, float delta);
-void ball_draw(t_ball *ball, t_resource_manager *mgr, SDL_Renderer *renderer);
+ball_t *ball_init(SDL_Renderer *renderer);
+void ball_destroy(ball_t *ball);
+void ball_update(ball_t *ball, input_t *input, float delta);
+void ball_draw(ball_t *ball, resource_manager_t *mgr, SDL_Renderer *renderer);

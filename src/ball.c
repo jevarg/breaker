@@ -2,9 +2,9 @@
 #include "ball.h"
 #include "utils.h"
 
-t_ball *ball_init(SDL_Renderer *renderer)
+ball_t *ball_init(SDL_Renderer *renderer)
 {
-    t_ball *ball = malloc(sizeof(t_ball));
+    ball_t *ball = malloc(sizeof(ball_t));
     if (ball == NULL)
     {
         print_error("Unable to initialize ball");
@@ -12,8 +12,7 @@ t_ball *ball_init(SDL_Renderer *renderer)
     }
 
     ball->texture = NULL;
-    ball->velocity = (fvec2) {.x = 1.0f, .y = BALL_DEFAULT_SPEED};
-    ball->dir = (vec2) {0};
+    ball->velocity = (fvec2) {0};
     ball->pos = (fvec2) {0};
     ball->bounding_box = (SDL_FRect) {
         .x = 0.0f,
@@ -25,7 +24,7 @@ t_ball *ball_init(SDL_Renderer *renderer)
     return ball;
 }
 
-void ball_destroy(t_ball *ball)
+void ball_destroy(ball_t *ball)
 {
     if (ball == NULL)
     {
@@ -40,19 +39,19 @@ void ball_destroy(t_ball *ball)
     free(ball);
 }
 
-void ball_update_bounding_box(t_ball *ball)
+void ball_update_bounding_box(ball_t *ball)
 {
     ball->bounding_box.x = ball->pos.x;
     ball->bounding_box.y = ball->pos.y;
 }
 
-void ball_update(t_ball *ball, t_input *input, float delta)
+void ball_update(ball_t *ball, input_t *input, float delta)
 {
-    if (ball->dir.x == 0 && ball->dir.y == 0)
+    if (ball->velocity.x == 0 && ball->velocity.y == 0)
     {
         if (input->kbd_state[SDL_SCANCODE_SPACE])
         {
-            ball->dir.y = -1;
+            ball->velocity.y = -BALL_DEFAULT_SPEED;
         }
         else
         {
@@ -63,28 +62,13 @@ void ball_update(t_ball *ball, t_input *input, float delta)
         return;
     }
 
-    if (ball->dir.x >= 1)
-    {
-        ball->pos.x += (ball->velocity.x * delta);
-    }
-    else if (ball->dir.x <= -1)
-    {
-        ball->pos.x -= (ball->velocity.x * delta);
-    }
-
-    if (ball->dir.y >= 1)
-    {
-        ball->pos.y += (ball->velocity.y * delta);
-    }
-    else if (ball->dir.y <= -1)
-    {
-        ball->pos.y -= (ball->velocity.y * delta);
-    }
+    ball->pos.x += ball->velocity.x * delta;
+    ball->pos.y += ball->velocity.y * delta;
 
     ball_update_bounding_box(ball);
 }
 
-void ball_draw(t_ball *ball, t_resource_manager *mgr, SDL_Renderer *renderer)
+void ball_draw(ball_t *ball, resource_manager_t *mgr, SDL_Renderer *renderer)
 {
     SDL_FRect dstrect = {
         .h = BALL_RADIUS,

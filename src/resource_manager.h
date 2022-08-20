@@ -10,12 +10,12 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 
-typedef enum e_resource_type
+typedef enum resource_type_e
 {
     RES_TEXTURE_TYPE = 0
-} t_resource_type;
+} resource_type_t;
 
-typedef enum e_resource_id
+typedef enum resource_id_t
 {
     TEX_BRICK = 0,
     TEX_CRACKS,
@@ -23,21 +23,21 @@ typedef enum e_resource_id
     TEX_BAR_BODY,
     TEX_BAR_RIGHT,
     TEX_BALL,
-} t_resource_id;
+} resource_id_t;
 
-typedef struct s_texture
+typedef struct texture_t
 {
     int id;
     SDL_Texture *texture;
-} t_texture;
+} texture_t;
 
 
-typedef struct s_resource_manager
+typedef struct resource_manager_t
 {
     SDL_Texture *tileset;
-} t_resource_manager;
+} resource_manager_t;
 
 
-bool load_texture(t_resource_manager *mgr, SDL_Renderer *renderer, t_resource_id id, const char *path);
-void unload_texture(t_resource_manager *mgr, t_resource_id id);
-void load_tileset(t_resource_manager *mgr, SDL_Renderer *renderer);
+bool load_texture(resource_manager_t *mgr, SDL_Renderer *renderer, resource_id_t id, const char *path);
+void unload_texture(resource_manager_t *mgr, resource_id_t id);
+void load_tileset(resource_manager_t *mgr, SDL_Renderer *renderer);

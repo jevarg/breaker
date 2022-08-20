@@ -1,20 +1,68 @@
+#include <stdint.h>
+
 #include "game.h"
 #include "window.h"
 #include "utils.h"
 #include "map.h"
 #include "collisions.h"
 #include "brick.h"
+#include "text.h"
 
-void game_update(t_game *game, t_ui *ui, float delta)
+void game_update(game_t *game, ui_t *ui, float delta)
 {
     input_update(ui->input);
-    bar_update(game->bar, ui->input);
-    ball_update(game->ball, ui->input, delta);
 
-    for (u_int i = 0; i < game->brick_nb; ++i)
+    switch (game->state)
     {
-        brick_update(game->bricks[i], ui->input);
+    case GAME_STATE_RUNNING:
+        bar_update(game->bar, ui->input);
+        ball_update(game->ball, ui->input, delta);
+
+        for (size_t i = 0; i < game->brick_nb; ++i)
+        {
+            brick_update(game->bricks[i], ui->input);
+        }
+        break;
+
+    case GAME_STATE_GAME_OVER:
+        if (ui->input->kbd_state[SDL_SCANCODE_RETURN] == SDL_TRUE)
+        {
+            game_restart(game);
+        }
+        break;
+
+    default:
+        break;
     }
+}
+
+void game_draw(game_t *game, ui_t *ui)
+{
+    switch (game->state)
+    {
+    case GAME_STATE_GAME_OVER:
+        draw_text("GAME OVER", ui, 0, 0, CENTERED_X | CENTERED_Y);
+        draw_text("press any key to try again", ui, 0, WIN_HEIGHT - 50, CENTERED_X);
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void game_restart(game_t *game)
+{
+    game->ball->velocity.x = 0;
+    game->ball->velocity.y = 0;
+    game->bar->pos.y = WIN_HEIGHT - 100;
+    game->ball->pos.y = WIN_HEIGHT - 100 - BALL_RADIUS;
+
+    for (size_t i = 0; i < game->brick_nb; ++i)
+    {
+        game->bricks[i]->state = BRICK_STATE_DEFAULT;
+    }
+    
+    game->state = GAME_STATE_RUNNING;
 }
 
 Uint32 fps_counter(Uint32 interval, void *param)
@@ -27,64 +75,68 @@ Uint32 fps_counter(Uint32 interval, void *param)
     return interval; // We want a steady interval
 }
 
-void game_loop(t_game *game, t_ui *ui)
+void game_loop(game_t *game, ui_t *ui)
 {
-    float delta = 0;
-    int fps = 0;
-    Uint64 frame_start_time = 0;
-    Uint64 frame_end_time = 0;
+    // float delta = 0;
+    // int fps = 0;
+    // Uint64 frame_start_time = 0;
+    // Uint64 frame_end_time = 0;
 
-    SDL_AddTimer(1000, fps_counter, &fps);
+    // SDL_AddTimer(1000, fps_counter, &fps);
 
     while (ui->input->needs_exit == SDL_FALSE &&
            ui->input->kbd_state[SDL_SCANCODE_ESCAPE] == SDL_FALSE)
     {
-        frame_start_time = SDL_GetTicks64();
-        delta = (frame_start_time - frame_end_time) / 1000.0f;
+        int target_delay = (1000 / TARGET_FPS);
+        // frame_start_time = SDL_GetTicks64();
+        // delta = (frame_start_time - frame_end_time);
 
         SDL_RenderClear(ui->renderer);
         SDL_PumpEvents();
 
-        game_update(game, ui, delta);
-        handle_collisions(game, ui, delta);
+        game_update(game, ui, 1.0f);
+        handle_collisions(game, ui, 1.0f);
 
         bar_draw(game->bar, &game->resource_mgr, ui->renderer);
         ball_draw(game->ball, &game->resource_mgr, ui->renderer);
 
-        for (u_int i = 0; i < game->brick_nb; ++i)
+        for (size_t i = 0; i < game->brick_nb; ++i)
         {
             brick_draw(game->bricks[i], &game->resource_mgr, ui->renderer);
         }
 
+        game_draw(game, ui);
+
         SDL_RenderPresent(ui->renderer);
+        SDL_Delay(target_delay);
 
-        frame_end_time = SDL_GetTicks64();
-        int elapsed_time = (frame_end_time - frame_start_time);
-        int target_delay = (1000 / TARGET_FPS);
-        int delay = target_delay - elapsed_time;
+        // frame_end_time = SDL_GetTicks64();
+        // int elapsed_time = (frame_end_time - frame_start_time);
+        // int target_delay = (1000 / TARGET_FPS);
+        // int delay = target_delay - elapsed_time;
 
-        if (delay > 0)
-        {
-            SDL_Delay(delay);
-        }
+        // if (delay > 0)
+        // {
+            // SDL_Delay(delay);
+        // }
 
-        ++fps;
+        // ++fps;
     }
 }
 
-bool game_init_bricks(t_game *game, t_ui *ui)
+bool game_init_bricks(game_t *game, ui_t *ui)
 {
-    u_int bricks_per_row = (WIN_WIDTH / BRICK_WIDTH);
-    u_int rows_nb = 3;
+    uint32_t bricks_per_row = (WIN_WIDTH / BRICK_WIDTH);
+    uint32_t rows_nb = 3;
     game->brick_nb = bricks_per_row * rows_nb;
 
-    game->bricks = malloc(sizeof(t_brick *) * game->brick_nb);
+    game->bricks = malloc(sizeof(brick_t *) * game->brick_nb);
     if (game->bricks == NULL)
     {
         return false;
     }
 
-    for (u_int i = 0; i < game->brick_nb; ++i)
+    for (size_t i = 0; i < game->brick_nb; ++i)
     {
         game->bricks[i] = brick_init(ui->renderer);
         if (game->bricks[i] == NULL)
@@ -99,9 +151,9 @@ bool game_init_bricks(t_game *game, t_ui *ui)
     return true;
 }
 
-void game_start(t_ui *ui)
+void game_start(ui_t *ui)
 {
-    t_game *game = game_init(ui);
+    game_t *game = game_init(ui);
     if (game == NULL)
     {
         print_error("Unable to init game");
@@ -114,20 +166,15 @@ void game_start(t_ui *ui)
     game_destroy(game);
 }
 
-t_game *game_init(t_ui *ui)
+game_t *game_init(ui_t *ui)
 {
-    t_game *game = malloc(sizeof(t_game));
+    game_t *game = malloc(sizeof(game_t));
     if (game == NULL)
     {
         return NULL;
     }
 
-    // for (size_t i = 0; i < MAX_RESOURCES; ++i)
-    // {
-    //     game->resource_mgr.resources[i] = NULL;
-    // }
-
-    // load_texture(&game->resource_mgr, ui->renderer, TEX_CORPO, "../test.jpg");
+    game->state = GAME_STATE_RUNNING;
     load_tileset(&game->resource_mgr, ui->renderer);
 
     game->bar = bar_init(ui->renderer);
@@ -148,13 +195,12 @@ t_game *game_init(t_ui *ui)
         return NULL;
     }
 
-    game->bar->pos.y = WIN_HEIGHT - 100;
-    game->ball->pos.y = WIN_HEIGHT - 100 - BALL_RADIUS;
+    game_restart(game);
 
     return game;
 }
 
-void game_destroy(t_game *game)
+void game_destroy(game_t *game)
 {
     if (game == NULL)
     {
@@ -173,7 +219,7 @@ void game_destroy(t_game *game)
 
     if (game->bricks != NULL)
     {
-        for (u_int i = 0; i < game->brick_nb; ++i)
+        for (size_t i = 0; i < game->brick_nb; ++i)
         {
             brick_destroy(game->bricks[i]);
         }

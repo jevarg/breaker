@@ -2,11 +2,11 @@
 #include "ui.h"
 #include "window.h"
 
-t_ui *ui_init()
+ui_t *ui_init()
 {
-    t_ui *ui;
+    ui_t *ui;
 
-    ui = malloc(sizeof(t_ui));
+    ui = calloc(1, sizeof(ui_t));
     if (ui == NULL)
     {
         return NULL;
@@ -30,7 +30,16 @@ t_ui *ui_init()
         return NULL;
     }
 
-    ui->input = malloc(sizeof(t_input));
+    ui->font = TTF_OpenFont("../gamegirl_classic.ttf", 24);
+    if (ui->font == NULL)
+    {
+        print_error("Failed to load font");
+        ui_destroy(ui);
+
+        return NULL;
+    }
+
+    ui->input = calloc(1, sizeof(input_t));
     if (ui->input == NULL)
     {
         ui_destroy(ui);
@@ -46,21 +55,11 @@ t_ui *ui_init()
     return ui;
 }
 
-void ui_destroy(t_ui *ui)
+void ui_destroy(ui_t *ui)
 {
     if (ui == NULL)
     {
         return;
-    }
-
-    if (ui->renderer != NULL)
-    {
-        SDL_DestroyRenderer(ui->renderer);
-    }
-
-    if (ui->win != NULL)
-    {
-        SDL_DestroyWindow(ui->win);
     }
 
     if (ui->input != NULL)
@@ -68,6 +67,20 @@ void ui_destroy(t_ui *ui)
         free(ui->input);
     }
 
+    if (ui->renderer != NULL)
+    {
+        SDL_DestroyRenderer(ui->renderer);
+    }
+
+    if (ui->font != NULL)
+    {
+        TTF_CloseFont(ui->font);
+    }
+
+    if (ui->win != NULL)
+    {
+        destroy_window(ui->win);
+    }
+
     free(ui);
-    SDL_Quit();
 }

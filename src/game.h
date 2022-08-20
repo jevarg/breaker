@@ -8,16 +8,25 @@
 
 #define TARGET_FPS 60
 
-typedef struct s_game
+typedef enum game_state_t
 {
-    t_resource_manager resource_mgr;
-    t_bar *bar;
-    t_ball *ball;
-    t_brick **bricks;
+    GAME_STATE_RUNNING,
+    GAME_STATE_WON,
+    GAME_STATE_GAME_OVER
+} game_state_t;
+typedef struct game_t
+{
+    resource_manager_t resource_mgr;
+    bar_t *bar;
+    ball_t *ball;
+    brick_t **bricks;
 
     u_int brick_nb;
-} t_game;
+    game_state_t state;
+} game_t;
 
-void game_start(t_ui *ui);
-t_game *game_init();
-void game_destroy(t_game *game);
+game_t *game_init();
+void game_start(ui_t *ui);
+void game_restart(game_t *game);
+void game_destroy(game_t *game);
+void game_draw(game_t *game, ui_t *ui);

@@ -2,9 +2,9 @@
 #include "brick.h"
 #include "utils.h"
 
-t_brick *brick_init(SDL_Renderer *renderer)
+brick_t *brick_init(SDL_Renderer *renderer)
 {
-    t_brick *brick = malloc(sizeof(t_brick));
+    brick_t *brick = malloc(sizeof(brick_t));
     if (brick == NULL)
     {
         print_error("Unable to initialize brick");
@@ -13,8 +13,8 @@ t_brick *brick_init(SDL_Renderer *renderer)
 
     brick->texture = NULL;
     brick->pos = (vec2){0};
-    brick->state = DEFAULT;
-    brick->bounding_box = (SDL_Rect){
+    brick->state = BRICK_STATE_DEFAULT;
+    brick->bounding_box = (SDL_FRect){
         .x = 0,
         .y = 0,
         .w = BRICK_WIDTH,
@@ -56,7 +56,7 @@ t_brick *brick_init(SDL_Renderer *renderer)
     return brick;
 }
 
-void brick_destroy(t_brick *brick)
+void brick_destroy(brick_t *brick)
 {
     if (brick == NULL)
     {
@@ -71,15 +71,15 @@ void brick_destroy(t_brick *brick)
     free(brick);
 }
 
-void brick_update(t_brick *brick, t_input *input)
+void brick_update(brick_t *brick, input_t *input)
 {
     brick->bounding_box.x = brick->pos.x;
     brick->bounding_box.y = brick->pos.y;
 }
 
-void brick_draw(t_brick *brick, t_resource_manager *mgr, SDL_Renderer *renderer)
+void brick_draw(brick_t *brick, resource_manager_t *mgr, SDL_Renderer *renderer)
 {
-    if (brick->state == BROKEN)
+    if (brick->state == BRICK_STATE_BROKEN)
     {
         // We do not render broken bricks.
         return;
@@ -92,7 +92,7 @@ void brick_draw(t_brick *brick, t_resource_manager *mgr, SDL_Renderer *renderer)
         .y = brick->pos.y
     };
 
-    t_resource_id type = (brick->state == DAMAGED) ? TEX_CRACKS : TEX_BRICK;
+    resource_id_t type = (brick->state == BRICK_STATE_DAMAGED) ? TEX_CRACKS : TEX_BRICK;
     SDL_Rect srcrect = TILESET_RECT(type);
 
     uint8_t nb_tiles = BRICK_WIDTH / TILE_WIDTH;
@@ -109,15 +109,15 @@ void brick_draw(t_brick *brick, t_resource_manager *mgr, SDL_Renderer *renderer)
     }
 }
 
-void brick_take_damage(t_brick *brick)
+void brick_take_damage(brick_t *brick)
 {
-    if (brick->state == DEFAULT)
+    if (brick->state == BRICK_STATE_DEFAULT)
     {
-        brick->state = DAMAGED;
+        brick->state = BRICK_STATE_DAMAGED;
     }
-    else if (brick->state == DAMAGED)
+    else if (brick->state == BRICK_STATE_DAMAGED)
     {
-        brick->state = BROKEN;
+        brick->state = BRICK_STATE_BROKEN;
         brick->bounding_box.w = 0;
         brick->bounding_box.h = 0;
     }

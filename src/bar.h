@@ -9,16 +9,16 @@
 #define BAR_WIDTH 128
 #define BAR_HEIGHT 16
 
-typedef struct s_bar
+typedef struct bar_t
 {
     vec2 pos;
     int force;
 
-    SDL_Rect bounding_box;
+    SDL_FRect bounding_box;
     SDL_Texture *texture;
-} t_bar;
+} bar_t;
 
-t_bar *bar_init(SDL_Renderer *renderer);
-void bar_destroy(t_bar *bar);
-void bar_update(t_bar *bar, t_input *input);
-void bar_draw(t_bar *bar, t_resource_manager *mgr, SDL_Renderer *renderer);
+bar_t *bar_init(SDL_Renderer *renderer);
+void bar_destroy(bar_t *bar);
+void bar_update(bar_t *bar, input_t *input);
+void bar_draw(bar_t *bar, resource_manager_t *mgr, SDL_Renderer *renderer);
