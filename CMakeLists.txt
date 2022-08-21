@@ -22,6 +22,7 @@ add_executable(breaker
     ${SRC_DIR}/brick.c
     ${SRC_DIR}/resource_manager.c
     ${SRC_DIR}/text.c
+    ${SRC_DIR}/particle.c
 )
 
 target_link_libraries(breaker

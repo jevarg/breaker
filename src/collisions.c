@@ -1,5 +1,6 @@
 #include "collisions.h"
 #include "window.h"
+#include "particle.h"
 
 void ball_world_collisions(game_t *game, ui_t *ui)
 {
@@ -32,11 +33,27 @@ void ball_bricks_collisions(game_t *game, ui_t *ui)
 {
     for (size_t i = 0; i < game->brick_nb; ++i)
     {
-        if (SDL_HasIntersectionF(&game->ball->bounding_box, &game->bricks[i]->bounding_box) == SDL_TRUE) {
+        brick_t *brick = game->bricks[i];
+
+        if (SDL_HasIntersectionF(&game->ball->bounding_box, &brick->bounding_box) == SDL_TRUE) {
             game->ball->velocity.y = -game->ball->velocity.y;
 
-            brick_take_damage(game->bricks[i]);
+            brick_take_damage(brick);
+            
+            uint8_t particles_nb = (rand() + 1) % 5;
+            for (size_t i = 0; i < particles_nb; ++i)
+            {
+                particle_t *particle = particle_create(
+                    (fvec2) { .x = brick->pos.x + rand() % 16 * 3, .y = brick->pos.y + BRICK_HEIGHT },
+                    (vec2) { .x = rand() % 1, .y = 1 },
+                    brick->res
+                );
 
+                game->particles[game->particles_nb + i] = particle;
+            }
+
+            game->particles_nb += particles_nb;
+            printf("Number of particles: %d\n", game->particles_nb);
             return;
         }
     }

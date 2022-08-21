@@ -21,6 +21,7 @@ typedef enum resource_id_t
     TEX_BRICK_CRACKED_1,
     TEX_BRICK_CRACKED_2,
     TEX_BRICK_CRACKED_3,
+    TEX_BRICK_PARTICLES,
     TEX_BAR_LEFT,
     TEX_BAR_BODY,
     TEX_BAR_RIGHT,

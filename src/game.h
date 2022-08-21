@@ -5,8 +5,10 @@
 #include "brick.h"
 #include "ui.h"
 #include "resource_manager.h"
+#include "particle.h"
 
 #define TARGET_FPS 60
+#define MAX_PARTICLES 100
 
 typedef enum game_state_t
 {
@@ -20,8 +22,10 @@ typedef struct game_t
     bar_t *bar;
     ball_t *ball;
     brick_t **bricks;
+    particle_t **particles;
 
-    u_int brick_nb;
+    uint8_t particles_nb;
+    uint32_t brick_nb;
     game_state_t state;
 } game_t;
 

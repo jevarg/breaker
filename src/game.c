@@ -22,6 +22,12 @@ void game_update(game_t *game, ui_t *ui, float delta)
         {
             brick_update(game->bricks[i], ui->input);
         }
+
+        for (size_t i = 0; i < game->particles_nb; ++i)
+        {
+            particle_update(game->particles[i]);
+        }
+
         break;
 
     case GAME_STATE_GAME_OVER:
@@ -60,6 +66,7 @@ void game_restart(game_t *game)
     for (size_t i = 0; i < game->brick_nb; ++i)
     {
         game->bricks[i]->state = BRICK_STATE_DEFAULT;
+        game->bricks[i]->res = TEX_BRICK;
     }
     
     game->state = GAME_STATE_RUNNING;
@@ -103,6 +110,11 @@ void game_loop(game_t *game, ui_t *ui)
         for (size_t i = 0; i < game->brick_nb; ++i)
         {
             brick_draw(game->bricks[i], &game->resource_mgr, ui->renderer);
+        }
+
+        for (size_t i = 0; i < game->particles_nb; ++i)
+        {
+            particle_draw(game->particles[i], &game->resource_mgr, ui->renderer);
         }
 
         game_draw(game, ui);
@@ -194,6 +206,9 @@ game_t *game_init(ui_t *ui)
 
         return NULL;
     }
+
+    game->particles_nb = 0;
+    game->particles = calloc(MAX_PARTICLES, sizeof(particle_t *));
 
     game_restart(game);
 
