@@ -23,9 +23,28 @@ void game_update(game_t *game, ui_t *ui, float delta)
             brick_update(game->bricks[i], ui->input);
         }
 
+        uint8_t deleted_particles = 0;
         for (size_t i = 0; i < game->particles_nb; ++i)
         {
-            particle_update(game->particles[i]);
+            particle_t *particle = game->particles[i];
+            if (particle == NULL)
+            {
+                continue;
+            }
+
+            if (particle->frame_nb >= 50) {
+                particle_destroy(&particle);
+                ++deleted_particles;
+                continue;
+            }
+
+            particle_update(particle);
+        }
+
+        if (deleted_particles)
+        {
+            game->particles_nb -= deleted_particles;
+            printf("Deleted %d particles\n", deleted_particles);
         }
 
         break;
@@ -114,7 +133,13 @@ void game_loop(game_t *game, ui_t *ui)
 
         for (size_t i = 0; i < game->particles_nb; ++i)
         {
-            particle_draw(game->particles[i], &game->resource_mgr, ui->renderer);
+            particle_t *particle = game->particles[i];
+            if (particle == NULL)
+            {
+                continue;
+            }
+
+            particle_draw(particle, &game->resource_mgr, ui->renderer);
         }
 
         game_draw(game, ui);

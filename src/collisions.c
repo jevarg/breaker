@@ -40,13 +40,24 @@ void ball_bricks_collisions(game_t *game, ui_t *ui)
 
             brick_take_damage(brick);
             
-            uint8_t particles_nb = (rand() + 1) % 5;
+            uint8_t particles_nb = (rand() % 5) + 1;
+            printf("particles_nb: %d\n", particles_nb);
+
             for (size_t i = 0; i < particles_nb; ++i)
             {
+                int x_offset = rand() % BRICK_WIDTH;
+                int y_offset = rand() % BRICK_HEIGHT;
+
                 particle_t *particle = particle_create(
-                    (fvec2) { .x = brick->pos.x + rand() % 16 * 3, .y = brick->pos.y + BRICK_HEIGHT },
-                    (vec2) { .x = rand() % 1, .y = 1 },
-                    brick->res
+                    (fvec2) {
+                        .x = brick->pos.x + x_offset,
+                        .y = brick->pos.y + y_offset
+                    },
+                    (vec2) {
+                        .x = (rand() % 1) ? 1 : -1,
+                        .y = 1
+                    },
+                    TEX_BRICK_PARTICLES
                 );
 
                 game->particles[game->particles_nb + i] = particle;

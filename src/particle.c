@@ -2,6 +2,8 @@
 #include "utils.h"
 #include "brick.h"
 
+#define PARTICLE_TILE_SIZE 4
+
 particle_t *particle_create(fvec2 pos, vec2 dir, resource_id_t res)
 {
     particle_t *particle = malloc(sizeof(particle_t));
@@ -11,32 +13,37 @@ particle_t *particle_create(fvec2 pos, vec2 dir, resource_id_t res)
         return NULL;
     }
 
-    particle->size = (vec2) {
-        .x = 16,
-        .y = 16
-    };
+    particle->size = (vec2) { .x = TILE_WIDTH, .y = TILE_HEIGHT };
+    particle->frame_nb = 0;
     particle->pos = pos;
-    particle->velocity = (fvec2) {1};
-    particle->dir = dir;
-    
-    particle->texture_rect = (SDL_Rect) TILESET_RECT(TEX_BRICK_PARTICLES);
-    particle->texture_rect.w = 4;
-    particle->texture_rect.h = 4;
+    particle->velocity = (fvec2) {
+        (float)((rand() % 10)) / 10,
+        (float)((rand() % 10)) / 10
+    };
 
-    uint8_t particle_offset = 4 * (rand() % 3);
+    particle->dir = dir;
+    particle->rotation_angle = (double)(rand() % 180) - 90;
+    
+    particle->texture_rect = (SDL_Rect) TILESET_RECT(res);
+    particle->texture_rect.w = PARTICLE_TILE_SIZE;
+    particle->texture_rect.h = PARTICLE_TILE_SIZE;
+
+    uint8_t idx = rand() % 8;
+    uint8_t particle_offset = PARTICLE_TILE_SIZE * (idx % PARTICLE_TILE_SIZE);
     particle->texture_rect.x += particle_offset;
-    // particle->texture_rect.y += particle_offset;
+    particle->texture_rect.y += (idx / PARTICLE_TILE_SIZE) * PARTICLE_TILE_SIZE;
 
     return particle;
 }
 
 void particle_update(particle_t *particle)
 {
-    particle->pos.x += particle->velocity.x;
-    particle->pos.y += particle->velocity.y;
+    particle->pos.x += particle->dir.x * particle->velocity.x;
+    particle->pos.y += particle->dir.y * particle->velocity.y;
+    particle->rotation_angle += 5;
 
-    particle->velocity.x += particle->dir.x;
-    particle->velocity.y += particle->dir.y;
+    particle->velocity.y++;
+    ++particle->frame_nb;
 }
 
 void particle_draw(particle_t *particle, resource_manager_t *mgr, SDL_Renderer *renderer)
@@ -48,7 +55,7 @@ void particle_draw(particle_t *particle, resource_manager_t *mgr, SDL_Renderer *
          .y = particle->pos.y
      };
 
-     SDL_RenderCopyF(renderer, mgr->tileset, &particle->texture_rect, &dstrect);
+     SDL_RenderCopyExF(renderer, mgr->tileset, &particle->texture_rect, &dstrect, particle->rotation_angle, NULL, SDL_FLIP_NONE);
 }
 
 void particle_destroy(particle_t **particle)
