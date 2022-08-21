@@ -1,14 +1,16 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "window.h"
 #include "utils.h"
 
 SDL_Window *create_window()
 {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
         print_error("Failed to initialize the SDL2 library");
+        print_error(SDL_GetError());
         return NULL;
     }
 
@@ -16,6 +18,7 @@ SDL_Window *create_window()
     {
         SDL_Quit();
         print_error("Failed to init PNG support");
+        print_error(IMG_GetError());
         return NULL;
     }
 
@@ -23,7 +26,18 @@ SDL_Window *create_window()
     {
         IMG_Quit();
         SDL_Quit();
-        print_error("Failed to init TTF support");
+        print_error("Failed to init TTF support.");
+        print_error(TTF_GetError());
+        return NULL;
+    }
+
+    if (Mix_OpenAudio(11025, AUDIO_U8, 1, 128) < 0)
+    {
+        TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
+        print_error("Failed to open audio mix");
+        print_error(Mix_GetError());
         return NULL;
     }
 

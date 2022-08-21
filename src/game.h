@@ -18,7 +18,7 @@ typedef enum game_state_t
 } game_state_t;
 typedef struct game_t
 {
-    resource_manager_t resource_mgr;
+    resource_manager_t *resource_mgr;
     bar_t *bar;
     ball_t *ball;
     brick_t **bricks;

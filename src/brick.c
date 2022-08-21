@@ -110,17 +110,21 @@ void brick_draw(brick_t *brick, resource_manager_t *mgr, SDL_Renderer *renderer)
     }
 }
 
-void brick_take_damage(brick_t *brick)
+void brick_take_damage(brick_t *brick, resource_manager_t *mgr)
 {
     if (brick->state == BRICK_STATE_DEFAULT)
     {
         brick->state = BRICK_STATE_DAMAGED;
         brick->res = TEX_BRICK_CRACKED_1 + (rand() % 3);
+
+        Mix_PlayChannel(-1, mgr->sounds[SFX_BRICK_HIT], 0);
     }
     else if (brick->state == BRICK_STATE_DAMAGED)
     {
         brick->state = BRICK_STATE_BROKEN;
         brick->bounding_box.w = 0;
         brick->bounding_box.h = 0;
+
+        Mix_PlayChannel(-1, mgr->sounds[SFX_BRICK_BREAK], 0);
     }
 }

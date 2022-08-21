@@ -4,7 +4,7 @@
 
 #define PARTICLE_TILE_SIZE 4
 
-particle_t *particle_create(fvec2 pos, vec2 dir, resource_id_t res)
+particle_t *particle_create(fvec2 pos, vec2 dir, texture_id_t res)
 {
     particle_t *particle = malloc(sizeof(particle_t));
     if (particle == NULL)
@@ -17,8 +17,8 @@ particle_t *particle_create(fvec2 pos, vec2 dir, resource_id_t res)
     particle->frame_nb = 0;
     particle->pos = pos;
     particle->velocity = (fvec2) {
-        (float)((rand() % 10)) / 10,
-        (float)((rand() % 10)) / 10
+        (float)((rand() % 100)) / 10,
+        (float)((rand() % 100)) / 10
     };
 
     particle->dir = dir;

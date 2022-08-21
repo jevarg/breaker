@@ -1,3 +1,5 @@
+#include <SDL2/SDL_mixer.h>
+
 #include "collisions.h"
 #include "window.h"
 #include "particle.h"
@@ -8,24 +10,38 @@ void ball_world_collisions(game_t *game, ui_t *ui)
         game->ball->pos.x < 0)
     {
         game->ball->velocity.x = -game->ball->velocity.x;
+        Mix_PlayChannel(-1, game->resource_mgr->sounds[SFX_BALL_BOUNCE], 0);
     }
 
-    if (game->ball->pos.y > WIN_HEIGHT ||
-        game->ball->pos.y < 0)
+    if (game->ball->pos.y < 0)
     {
         game->ball->velocity.y = 0;
+        Mix_PlayChannel(-1, game->resource_mgr->sounds[SFX_BALL_BOUNCE], 0);
+    }
+
+    if (game->ball->pos.y > WIN_HEIGHT)
+    {
         game->state = GAME_STATE_GAME_OVER;
     }
 }
 
 void ball_bar_collisions(game_t *game, ui_t *ui)
 {
+    if (game->ball->velocity.x == 0 &&
+        game->ball->velocity.y == 0)
+    {
+        // Ball is not moving
+        return;
+    }
+
     if (SDL_HasIntersectionF(&game->ball->bounding_box, &game->bar->bounding_box) == SDL_TRUE) {
         game->ball->velocity.y = -game->ball->velocity.y;
 
         if (ui->input->mouse_dir.x) {
             game->ball->velocity.x = SDL_min(ui->input->mouse_dir.x * game->bar->force, BALL_MAX_SPEED);
         }
+
+        Mix_PlayChannel(-1, game->resource_mgr->sounds[SFX_BALL_BOUNCE], 0);
     }
 }
 
@@ -38,7 +54,7 @@ void ball_bricks_collisions(game_t *game, ui_t *ui)
         if (SDL_HasIntersectionF(&game->ball->bounding_box, &brick->bounding_box) == SDL_TRUE) {
             game->ball->velocity.y = -game->ball->velocity.y;
 
-            brick_take_damage(brick);
+            brick_take_damage(brick, game->resource_mgr);
             
             uint8_t particles_nb = (rand() % 5) + 1;
             printf("particles_nb: %d\n", particles_nb);

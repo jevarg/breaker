@@ -123,12 +123,12 @@ void game_loop(game_t *game, ui_t *ui)
         game_update(game, ui, 1.0f);
         handle_collisions(game, ui, 1.0f);
 
-        bar_draw(game->bar, &game->resource_mgr, ui->renderer);
-        ball_draw(game->ball, &game->resource_mgr, ui->renderer);
+        bar_draw(game->bar, game->resource_mgr, ui->renderer);
+        ball_draw(game->ball, game->resource_mgr, ui->renderer);
 
         for (size_t i = 0; i < game->brick_nb; ++i)
         {
-            brick_draw(game->bricks[i], &game->resource_mgr, ui->renderer);
+            brick_draw(game->bricks[i], game->resource_mgr, ui->renderer);
         }
 
         for (size_t i = 0; i < game->particles_nb; ++i)
@@ -139,7 +139,7 @@ void game_loop(game_t *game, ui_t *ui)
                 continue;
             }
 
-            particle_draw(particle, &game->resource_mgr, ui->renderer);
+            particle_draw(particle, game->resource_mgr, ui->renderer);
         }
 
         game_draw(game, ui);
@@ -205,14 +205,20 @@ void game_start(ui_t *ui)
 
 game_t *game_init(ui_t *ui)
 {
-    game_t *game = malloc(sizeof(game_t));
+    game_t *game = calloc(1, sizeof(game_t));
     if (game == NULL)
     {
         return NULL;
     }
 
-    game->state = GAME_STATE_RUNNING;
-    load_tileset(&game->resource_mgr, ui->renderer);
+    game->resource_mgr = resource_mgr_init(ui->renderer);
+    if (game->resource_mgr == NULL)
+    {
+        print_error("Unable to init resource manager");
+        game_destroy(game);
+
+        return NULL;
+    }
 
     game->bar = bar_init(ui->renderer);
     if (game->bar == NULL)
@@ -246,6 +252,8 @@ void game_destroy(game_t *game)
     {
         return;
     }
+
+    resource_mgr_destroy(game->resource_mgr);
 
     if (game->ball != NULL)
     {

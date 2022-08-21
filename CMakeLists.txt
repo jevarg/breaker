@@ -5,6 +5,7 @@ project(breaker)
 find_library(SDL2 SDL2 REQUIRED)
 find_library(SDL2_IMAGE SDL2_image REQUIRED)
 find_library(SDL2_TTF SDL2_ttf REQUIRED)
+find_library(SDL2_MIXER SDL2_mixer REQUIRED)
 
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 
@@ -29,4 +30,5 @@ target_link_libraries(breaker
     ${SDL2}
     ${SDL2_IMAGE}
     ${SDL2_TTF}
+    ${SDL2_MIXER}
 )

@@ -22,11 +22,11 @@ typedef struct s_brick
     SDL_FRect bounding_box;
     SDL_Texture *texture;
     t_brick_state state;
-    resource_id_t res;
+    texture_id_t res;
 } brick_t;
 
 brick_t *brick_init(SDL_Renderer *renderer);
 void brick_destroy(brick_t *brick);
 void brick_update(brick_t *brick, input_t *input);
 void brick_draw(brick_t *brick, resource_manager_t *mgr, SDL_Renderer *renderer);
-void brick_take_damage(brick_t *brick);
+void brick_take_damage(brick_t *brick, resource_manager_t *mgr);
