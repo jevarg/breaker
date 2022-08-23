@@ -6,6 +6,7 @@
 #include "ui.h"
 #include "resource_manager.h"
 #include "particle.h"
+#include "particle_list.h"
 
 #define TARGET_FPS 60
 #define MAX_PARTICLES 100
@@ -23,6 +24,7 @@ typedef struct game_t
     ball_t *ball;
     brick_t **bricks;
     particle_t **particles;
+    particle_list_node_t *particles_list;
 
     uint8_t particles_nb;
     uint32_t brick_nb;

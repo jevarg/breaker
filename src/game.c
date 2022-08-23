@@ -24,27 +24,46 @@ void game_update(game_t *game, ui_t *ui, float delta)
         }
 
         uint8_t deleted_particles = 0;
-        for (size_t i = 0; i < game->particles_nb; ++i)
+        particle_list_node_t *node = game->particles_list;
+        while (node != NULL)
         {
-            particle_t *particle = game->particles[i];
-            if (particle == NULL)
+            if (node->particle == NULL)
             {
+                node = node->next;
                 continue;
             }
 
-            if (particle->frame_nb >= 50) {
-                particle_destroy(&particle);
+            if (node->particle->frame_nb >= 50)
+            {
+                particle_destroy(&node->particle);
+
+                particle_list_node_t *next = node->next;
+                particle_list_remove(node);
+                node = next;
+
+                if (node == NULL)
+                {
+                    // this needs to be refactored because it is smelly AF!!!
+                    game->particles_list = particle_list_init();
+                }
+                else if (node->prev == NULL)
+                {
+                    game->particles_list = node;
+                }
+
                 ++deleted_particles;
                 continue;
             }
 
-            particle_update(particle);
+            particle_update(node->particle);
+            node = node->next;
         }
 
         if (deleted_particles)
         {
             game->particles_nb -= deleted_particles;
             printf("Deleted %d particles\n", deleted_particles);
+            printf("Number of particles: %d\n", game->particles_nb);
         }
 
         break;
@@ -59,10 +78,30 @@ void game_update(game_t *game, ui_t *ui, float delta)
     default:
         break;
     }
+
+    handle_collisions(game, ui, 1.0f);
 }
 
 void game_draw(game_t *game, ui_t *ui)
 {
+    bar_draw(game->bar, game->resource_mgr, ui->renderer);
+    ball_draw(game->ball, game->resource_mgr, ui->renderer);
+
+    for (size_t i = 0; i < game->brick_nb; ++i)
+    {
+        brick_draw(game->bricks[i], game->resource_mgr, ui->renderer);
+    }
+
+    for (particle_list_node_t *node = game->particles_list; node != NULL; node = node->next)
+    {
+        if (node->particle == NULL)
+        {
+            continue;
+        }
+
+        particle_draw(node->particle, game->resource_mgr, ui->renderer);
+    }
+
     switch (game->state)
     {
     case GAME_STATE_GAME_OVER:
@@ -121,27 +160,6 @@ void game_loop(game_t *game, ui_t *ui)
         SDL_PumpEvents();
 
         game_update(game, ui, 1.0f);
-        handle_collisions(game, ui, 1.0f);
-
-        bar_draw(game->bar, game->resource_mgr, ui->renderer);
-        ball_draw(game->ball, game->resource_mgr, ui->renderer);
-
-        for (size_t i = 0; i < game->brick_nb; ++i)
-        {
-            brick_draw(game->bricks[i], game->resource_mgr, ui->renderer);
-        }
-
-        for (size_t i = 0; i < game->particles_nb; ++i)
-        {
-            particle_t *particle = game->particles[i];
-            if (particle == NULL)
-            {
-                continue;
-            }
-
-            particle_draw(particle, game->resource_mgr, ui->renderer);
-        }
-
         game_draw(game, ui);
 
         SDL_RenderPresent(ui->renderer);
@@ -238,8 +256,7 @@ game_t *game_init(ui_t *ui)
         return NULL;
     }
 
-    game->particles_nb = 0;
-    game->particles = calloc(MAX_PARTICLES, sizeof(particle_t *));
+    game->particles_list = particle_list_init();
 
     game_restart(game);
 

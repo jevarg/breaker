@@ -61,7 +61,7 @@ void ball_bricks_collisions(game_t *game, ui_t *ui)
             brick_take_damage(brick, game->resource_mgr);
             
             uint8_t particles_nb = (rand() % 5) + 1;
-            printf("particles_nb: %d\n", particles_nb);
+            printf("Number of particles: %d\n", particles_nb);
 
             for (size_t i = 0; i < particles_nb; ++i)
             {
@@ -80,7 +80,7 @@ void ball_bricks_collisions(game_t *game, ui_t *ui)
                     TEX_BRICK_PARTICLES
                 );
 
-                game->particles[game->particles_nb + i] = particle;
+                particle_list_add(game->particles_list, particle);
             }
 
             game->particles_nb += particles_nb;
