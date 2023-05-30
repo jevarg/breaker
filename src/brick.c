@@ -102,7 +102,7 @@ void brick_draw(brick_t *brick, resource_manager_t *mgr, SDL_Renderer *renderer)
         dstrect.w = TILE_WIDTH;
     }
 
-    for (uint i = 0; i < nb_tiles; ++i)
+    for (uint32_t i = 0; i < nb_tiles; ++i)
     {
         dstrect.x = brick->pos.x + dstrect.w * i;
         SDL_RenderCopy(renderer, mgr->tileset, &srcrect, &dstrect);

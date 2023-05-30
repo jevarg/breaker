@@ -11,7 +11,7 @@ typedef struct particle_t
     vec2 dir;
     double rotation_angle;
     SDL_Rect texture_rect;
-    uint frame_nb;
+    uint32_t frame_nb;
 } particle_t;
 
 particle_t *particle_create(fvec2 pos, vec2 dir, texture_id_t res);
