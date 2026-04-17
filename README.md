@@ -1,5 +1,5 @@
 # Breaker
-
+Quick and small implementation of a Breaker-like game in C
 
 ## Getting started
 
